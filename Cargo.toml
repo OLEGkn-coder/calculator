@@ -1,6 +1,7 @@
 [package]
-name = "calculator"
+name = "Parser-calculator"
 version = "0.1.0"
 edition = "2024"
-
+license = "MIT"
+description = "My project is a calculator. We can calculate complex expressions, take into account the priorities of signs and parentheses. We will parse the mathematical expression into its component parts: numbers, operators, parentheses."
 [dependencies]
