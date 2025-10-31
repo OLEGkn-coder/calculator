@@ -1,4 +1,4 @@
-# Parser-calculator, autor Oleh Modhenskyi
+# Parser-calculator, autor Oleh Moshenskyi
 
 ## Parsing a mathemtical expression
 
