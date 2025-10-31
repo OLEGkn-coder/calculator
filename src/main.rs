@@ -6,5 +6,7 @@ fn main() {
     println!("Enter a number to calculate: ");
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
-    check_bracket(&input.trim().to_string());
+
+    let res = Parser_calculator::check_bracket(&input.trim().to_string());
+    println!("Result: {}", res.unwrap());
 }

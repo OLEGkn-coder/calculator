@@ -1,0 +1,4 @@
+WHITESPACE = _{ " " }
+number = @{ ASCII_DIGIT+ }
+sign = { "+" | "-" | "*" | "/"}
+expresion = { number ~ (sign ~ number)* ~ ("(" ~ expresion ~ ")")*}
