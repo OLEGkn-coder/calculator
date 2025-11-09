@@ -1,4 +1,3 @@
-use error::{CalcError, Res};
 use Parser_calculator::check_bracket;
 #[test]
 fn test_number_one() {

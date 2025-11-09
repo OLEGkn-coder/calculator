@@ -4,7 +4,7 @@ version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Oleh Moshenskyi"]
-description = "My project is a calculator. We can calculate complex expressions, take into account the priorities of signs and parentheses. We will parse the mathematical expression into its component parts: numbers, operators, parentheses."
+description = "In the parser, we will parse a mathematical expression into its main components: numbers, signs, brackets. The result of the parsing will be used to calculate the mathematical expression, taking into account priorities: first the brackets, then multiplication/dividing and at the end addition and subtraction. The calculator also takes into account the nested brackets. The calculator also raises the number to the power (pow(n, p)), calculates the square root (sqrt(n)) and calculates sin(n) and cos(n)."
 
 [lib]
 name = "Parser_calculator"
@@ -19,3 +19,4 @@ anyhow = "1.0.100"
 pest = "2.8.3"
 pest_derive = "2.8.3"
 thiserror = "2.0.17"
+clap = { version = "4.5", features = ["derive"] }
