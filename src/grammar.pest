@@ -1,4 +1,11 @@
-WHITESPACE = _{ " " }
-number = @{ ASCII_DIGIT+ }
-sign = { "+" | "-" | "*" | "/"}
-expresion = { number ~ (sign ~ number)* ~ ("(" ~ expresion ~ ")")*}
+WHITESPACE = _{ " " | "\n" }
+number = @{ "-"? ~ ASCII_DIGIT+ }
+expression = {priority ~ (second_priority ~ priority)*}
+priority = { in_brackets ~ (first_priority ~ in_brackets)*}
+in_brackets = {function | number | "(" ~ expression ~ ")"}
+first_priority = { "*" | "/" }
+second_priority = { "+" | "-"}
+function = {function_name ~ "(" ~ function_arg ~ ")"}
+function_name = { "pow" | "sqrt" | "sin" | "cos"}
+function_arg = { expression ~ ("," ~ expression)*}
+calculation = { SOI ~ expression ~ EOI }

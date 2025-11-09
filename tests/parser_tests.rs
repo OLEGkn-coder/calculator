@@ -1,10 +1,9 @@
-use Parser_calculator::*;
-
+use error::{CalcError, Res};
+use Parser_calculator::check_bracket;
 #[test]
 fn test_number_one() {
     assert_eq!(check_bracket(&"12+(3*1)*2".to_string()).unwrap(), 18);
 }
-
 #[test]
 fn test_number_two() {
     assert_eq!(check_bracket(&"(2+3)*5-25".to_string()).unwrap(), 0);
@@ -58,4 +57,28 @@ fn test_sqrt_one() {
 
 fn test_sqrt_two() {
     assert_eq!(check_bracket(&"sqrt(100)".to_string()).unwrap(), 10);
+}
+
+#[test]
+
+fn test_sin_one() {
+    assert_eq!(check_bracket(&"sin(0)".to_string()).unwrap(), 0);
+}
+
+#[test]
+
+fn test_sin_two() {
+    assert_eq!(check_bracket(&"sin(90)".to_string()).unwrap(), 1);
+}
+
+#[test]
+
+fn test_cos_one() {
+    assert_eq!(check_bracket(&"cos(0)".to_string()).unwrap(), 1);
+}
+
+#[test]
+
+fn test_cos_two() {
+    assert_eq!(check_bracket(&"cos(90)".to_string()).unwrap(), 0);
 }

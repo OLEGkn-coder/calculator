@@ -1,6 +1,10 @@
 #![doc = include_str!("../README.md")]
+
 pub mod error;
 use error::{CalcError, Res};
+#[derive(pest_derive::Parser)]
+#[grammar = "grammar.pest"]
+pub struct ParserCalculator;
 
 /// Це парсер математичних виразів який бере наш вираз(input) та парсить його на
 /// основні складові: числа, знаки, дужки.
@@ -17,6 +21,7 @@ use error::{CalcError, Res};
 /// 1. Дужки
 /// 2. Множення і ділення
 /// 3. Додавання і віднімання
+
 pub fn pars(input: &str) -> Res<i32> {
     if input.trim().is_empty() {
         return Err(CalcError::EmptyExp);
@@ -24,8 +29,7 @@ pub fn pars(input: &str) -> Res<i32> {
     let input = input.trim();
     check_bracket(&input.to_string())
 }
-/// Grammar Rule: expresion(дужки)
-///
+
 /// Функція шукає дужки у нашому виразі, якщо знаходить то
 /// обчислюємо значення в дужках та замінюємо цей вираз з дужками на саме значення.
 pub fn check_bracket(input: &String) -> Res<i32> {
@@ -34,6 +38,12 @@ pub fn check_bracket(input: &String) -> Res<i32> {
     }
     if input.contains("sqrt") {
         return to_sqrt(input);
+    }
+    if input.contains("sin") {
+        return sin_func(input);
+    }
+    if input.contains("cos") {
+        return cos_func(input);
     }
     let mut new_input = input.clone();
     while new_input.contains('(') && new_input.contains(')') {
@@ -69,8 +79,6 @@ pub fn check_bracket(input: &String) -> Res<i32> {
     calc(number_input, sign_input)
 }
 
-/// Grammar Rule: number
-///
 /// Парсимо input на числа.
 /// Для цього ми замінюємо всі знаки на пробіли і потім
 /// парсимо по пробілам наші числв.
@@ -88,8 +96,6 @@ pub fn parse_number(input: &String) -> Vec<i32> {
     number
 }
 
-/// Grammar Rule: sign
-///
 /// Парсимо input на знаки.
 /// Для цього ми просто використовуємо метод filtre щоб відфільтрувати
 /// всі знаки від інших символів та чисел.
@@ -152,17 +158,11 @@ pub fn calc(mut number: Vec<i32>, mut ch: Vec<char>) -> Res<i32> {
 
 pub fn to_power(input: &String) -> Res<i32> {
     let mut res: i32 = 1;
-    let replace_input: Vec<String> = input
-        .replace("(", " ")
-        .replace(")", " ")
-        .split(" ")
-        .map(|s| s.to_string())
-        .collect();
+    let replace_input: String = input.replace("pow(", "").replace(")", "");
     if replace_input.is_empty() {
         return Err(CalcError::EmptyExp);
     }
-    let nums: String = replace_input[1].to_string();
-    let numbers: Vec<i32> = nums
+    let numbers: Vec<i32> = replace_input
         .replace(",", " ")
         .split(" ")
         .map(|s| s.parse().unwrap())
@@ -176,16 +176,12 @@ pub fn to_power(input: &String) -> Res<i32> {
 }
 
 pub fn to_sqrt(input: &String) -> Res<i32> {
-    let replcae_input: Vec<i32> = input
-        .replace("(", " ")
-        .replace(")", " ")
-        .split(" ")
-        .filter_map(|s| s.parse().ok())
-        .collect();
+    let replcae_input: String = input.replace("sqrt(", "").replace(")", "");
+
     if replcae_input.is_empty() {
         return Err(CalcError::EmptyExp);
     }
-    let number = replcae_input[0];
+    let number = replcae_input.parse().unwrap();
     let mut res: i32 = 0;
     for i in 1..number {
         if i * i == number {
@@ -196,17 +192,18 @@ pub fn to_sqrt(input: &String) -> Res<i32> {
     Ok(res)
 }
 
-pub fn sin_func(input: &String) -> Res<f64> {
-    let num = input.replace("sin( ", "").replace(")", "");
+pub fn sin_func(input: &String) -> Res<i32> {
+    let num = input.replace("sin(", "").replace(")", "");
     let num: f64 = num.parse().unwrap();
-    Ok(num.sin())
+    Ok(num.to_radians().sin().round() as i32)
 }
 
-pub fn cos_func(input: &String) -> Res<f64> {
-    let num = input.replace("cos( ", "").replace(")", "");
+pub fn cos_func(input: &String) -> Res<i32> {
+    let num = input.replace("cos(", "").replace(")", "");
     let num: f64 = num.parse().unwrap();
-    Ok(num.cos())
+    Ok(num.to_radians().cos().round() as i32)
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -269,5 +266,28 @@ mod tests {
 
     fn test_sqrt_two() {
         assert_eq!(check_bracket(&"sqrt(100)".to_string()).unwrap(), 10);
+    }
+    #[test]
+
+    fn test_sin_one() {
+        assert_eq!(check_bracket(&"sin(0)".to_string()).unwrap(), 0);
+    }
+
+    #[test]
+
+    fn test_sin_two() {
+        assert_eq!(check_bracket(&"sin(90)".to_string()).unwrap(), 1);
+    }
+
+    #[test]
+
+    fn test_cos_one() {
+        assert_eq!(check_bracket(&"cos(0)".to_string()).unwrap(), 1);
+    }
+
+    #[test]
+
+    fn test_cos_two() {
+        assert_eq!(check_bracket(&"cos(90)".to_string()).unwrap(), 0);
     }
 }
