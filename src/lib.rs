@@ -29,6 +29,9 @@ pub fn pars(input: &str) -> Res<i32> {
 /// Функція шукає дужки у нашому виразі, якщо знаходить то
 /// обчислюємо значення в дужках та замінюємо цей вираз з дужками на саме значення.
 pub fn check_bracket(input: &String) -> Res<i32> {
+    if input.contains("pow") {
+        return to_power(input);
+    }
     let mut new_input = input.clone();
     while new_input.contains('(') && new_input.contains(')') {
         let input_chars: Vec<char> = new_input.chars().collect();
@@ -104,25 +107,28 @@ pub fn parse_sign(input: &String) -> Vec<char> {
 /// обчислюємо число яке стоїть на місці(a) індекса знака "*" або "/" з a+1
 /// та отримуємо значення. Потім додавання та віднімання.
 
-pub fn calc(mut number: Vec<i32>, ch: Vec<char>) -> Res<i32> {
+pub fn calc(mut number: Vec<i32>, mut ch: Vec<char>) -> Res<i32> {
     if number.is_empty() {
         return Err(CalcError::EmptyExp);
     }
-
-    for b in 0..ch.len() {
+    let mut b = 0;
+    while b < ch.len() {
         if b + 1 >= number.len() {
             break;
         }
         if ch[b] == '*' {
             number[b] *= number[b + 1];
-            number[b + 1] = 0;
-        }
-        if ch[b] == '/' {
+            number.remove(b + 1);
+            ch.remove(b);
+        } else if ch[b] == '/' {
             if number[b + 1] == 0 {
                 return Err(CalcError::DivByZero);
             }
             number[b] /= number[b + 1];
-            number[b + 1] = 0;
+            number.remove(b + 1);
+            ch.remove(b);
+        } else {
+            b += 1;
         }
     }
 
@@ -138,6 +144,28 @@ pub fn calc(mut number: Vec<i32>, ch: Vec<char>) -> Res<i32> {
         }
     }
 
+    Ok(res)
+}
+
+pub fn to_power(input: &String) -> Res<i32> {
+    let mut res: i32 = 1;
+    let replace_input: Vec<String> = input
+        .replace("(", " ")
+        .replace(")", " ")
+        .split(" ")
+        .map(|s| s.to_string())
+        .collect();
+    let nums: String = replace_input[1].to_string();
+    let numbers: Vec<i32> = nums
+        .replace(",", " ")
+        .split(" ")
+        .map(|s| s.parse().unwrap())
+        .collect();
+    let number = numbers[0];
+    let power = numbers[1];
+    for _ in 0..power as usize {
+        res *= number;
+    }
     Ok(res)
 }
 
@@ -167,5 +195,29 @@ mod tests {
             check_bracket(&"200+200+100*(100+100)-(100-90)".to_string()).unwrap(),
             20390
         );
+    }
+
+    #[test]
+
+    fn test_number_five() {
+        assert_eq!(
+            check_bracket(
+                &"123+387-321*(322-2)/313+1000-23*23-(3211)/3+3000-1*423+(3*(3*3))-1532/2+4*(231)"
+                    .to_string()
+            )
+            .unwrap(),
+            2345
+        );
+    }
+    #[test]
+
+    fn test_power_one() {
+        assert_eq!(check_bracket(&"pow(2,2)".to_string()).unwrap(), 4);
+    }
+
+    #[test]
+
+    fn test_power_two() {
+        assert_eq!(check_bracket(&"pow(9,5)".to_string()).unwrap(), 59049);
     }
 }

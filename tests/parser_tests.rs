@@ -24,3 +24,26 @@ fn test_number_four() {
         20390
     );
 }
+#[test]
+
+fn test_number_five() {
+    assert_eq!(
+        check_bracket(
+            &"123+387-321*(322-2)/313+1000-23*23-(3211)/3+3000-1*423+(3*(3*3))-1532/2+4*(231)"
+                .to_string()
+        )
+        .unwrap(),
+        2345
+    );
+}
+#[test]
+
+fn test_power_one() {
+    assert_eq!(check_bracket(&"pow(2,2)".to_string()).unwrap(), 4);
+}
+
+#[test]
+
+fn test_power_two() {
+    assert_eq!(check_bracket(&"pow(9,5)".to_string()).unwrap(), 59049);
+}
