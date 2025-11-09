@@ -47,3 +47,15 @@ fn test_power_one() {
 fn test_power_two() {
     assert_eq!(check_bracket(&"pow(9,5)".to_string()).unwrap(), 59049);
 }
+
+#[test]
+
+fn test_sqrt_one() {
+    assert_eq!(check_bracket(&"sqrt(16)".to_string()).unwrap(), 4);
+}
+
+#[test]
+
+fn test_sqrt_two() {
+    assert_eq!(check_bracket(&"sqrt(100)".to_string()).unwrap(), 10);
+}

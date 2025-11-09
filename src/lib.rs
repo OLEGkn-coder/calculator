@@ -32,6 +32,9 @@ pub fn check_bracket(input: &String) -> Res<i32> {
     if input.contains("pow") {
         return to_power(input);
     }
+    if input.contains("sqrt") {
+        return to_sqrt(input);
+    }
     let mut new_input = input.clone();
     while new_input.contains('(') && new_input.contains(')') {
         let input_chars: Vec<char> = new_input.chars().collect();
@@ -155,6 +158,9 @@ pub fn to_power(input: &String) -> Res<i32> {
         .split(" ")
         .map(|s| s.to_string())
         .collect();
+    if replace_input.is_empty() {
+        return Err(CalcError::EmptyExp);
+    }
     let nums: String = replace_input[1].to_string();
     let numbers: Vec<i32> = nums
         .replace(",", " ")
@@ -169,6 +175,38 @@ pub fn to_power(input: &String) -> Res<i32> {
     Ok(res)
 }
 
+pub fn to_sqrt(input: &String) -> Res<i32> {
+    let replcae_input: Vec<i32> = input
+        .replace("(", " ")
+        .replace(")", " ")
+        .split(" ")
+        .filter_map(|s| s.parse().ok())
+        .collect();
+    if replcae_input.is_empty() {
+        return Err(CalcError::EmptyExp);
+    }
+    let number = replcae_input[0];
+    let mut res: i32 = 0;
+    for i in 1..number {
+        if i * i == number {
+            res = i;
+            break;
+        }
+    }
+    Ok(res)
+}
+
+pub fn sin_func(input: &String) -> Res<f64> {
+    let num = input.replace("sin( ", "").replace(")", "");
+    let num: f64 = num.parse().unwrap();
+    Ok(num.sin())
+}
+
+pub fn cos_func(input: &String) -> Res<f64> {
+    let num = input.replace("cos( ", "").replace(")", "");
+    let num: f64 = num.parse().unwrap();
+    Ok(num.cos())
+}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -219,5 +257,17 @@ mod tests {
 
     fn test_power_two() {
         assert_eq!(check_bracket(&"pow(9,5)".to_string()).unwrap(), 59049);
+    }
+
+    #[test]
+
+    fn test_sqrt_one() {
+        assert_eq!(check_bracket(&"sqrt(16)".to_string()).unwrap(), 4);
+    }
+
+    #[test]
+
+    fn test_sqrt_two() {
+        assert_eq!(check_bracket(&"sqrt(100)".to_string()).unwrap(), 10);
     }
 }
