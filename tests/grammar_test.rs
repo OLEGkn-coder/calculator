@@ -257,3 +257,40 @@ fn test_rule_cal_sub() {
     let res = ParserCalculator::parse(Rule::calculation, "2 - 2");
     assert!(res.is_ok());
 }
+/// factorial
+
+#[test]
+fn test_rule_factorial() {
+    let res = ParserCalculator::parse(Rule::factorial, "5!");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_factorial_zero() {
+    let res = ParserCalculator::parse(Rule::factorial, "0!");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_factorial_one() {
+    let res = ParserCalculator::parse(Rule::factorial, "1!");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_factorial_exp() {
+    let res = ParserCalculator::parse(Rule::factorial, "(32+2)!");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_factorial_double() {
+    let res = ParserCalculator::parse(Rule::factorial, "(5-1)!!");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_factorial_inv() {
+    let res = ParserCalculator::parse(Rule::factorial, "5");
+    assert!(res.is_err());
+}

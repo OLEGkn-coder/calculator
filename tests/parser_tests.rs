@@ -81,3 +81,27 @@ fn test_cos_one() {
 fn test_cos_two() {
     assert_eq!(check_bracket(&"cos(90)".to_string()).unwrap(), 0);
 }
+
+#[test]
+
+fn test_fac_one() {
+    assert_eq!(check_bracket(&"(5)!".to_string()).unwrap(), 120);
+}
+
+#[test]
+
+fn test_fac_two() {
+    assert_eq!(check_bracket(&"(2+1)!!".to_string()).unwrap(), 720);
+}
+
+#[test]
+
+fn test_fac_three() {
+    assert_eq!(check_bracket(&"(2+3)!".to_string()).unwrap(), 120);
+}
+
+#[test]
+
+fn test_fac_four() {
+    assert_eq!(check_bracket(&"(3)!!".to_string()).unwrap(), 720);
+}

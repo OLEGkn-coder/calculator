@@ -1,3 +1,5 @@
+use core::error;
+
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -8,6 +10,8 @@ pub enum CalcError {
     EmptyExp,
     #[error("Expression has no brackets")]
     NoBracket,
+    #[error("Invalid input")]
+    InvalidInput,
 }
 
 pub type Res<T> = Result<T, CalcError>;

@@ -41,6 +41,9 @@ pub fn check_bracket(input: &String) -> Res<i32> {
     if input.contains("cos") {
         return cos_func(input);
     }
+    if input.contains("!") && input.contains('(') && input.contains(')') {
+        return fac_func(input);
+    }
     let mut new_input = input.clone();
     while new_input.contains('(') && new_input.contains(')') {
         let input_chars: Vec<char> = new_input.chars().collect();
@@ -200,6 +203,50 @@ pub fn cos_func(input: &String) -> Res<i32> {
     Ok(num.to_radians().cos().round() as i32)
 }
 
+pub fn fac_func(input: &String) -> Res<i32> {
+    if input.is_empty() {
+        return Err(CalcError::EmptyExp);
+    }
+    let mut res = 1;
+    let mut count = 0;
+    for i in input.chars() {
+        if i == '!' {
+            count += 1;
+        }
+    }
+    if count == 1 {
+        let num = input.replace("!", "");
+        let num: i32 = if num.contains('(') || num.contains('+') || num.contains('-') {
+            check_bracket(&num)?
+        } else {
+            num.parse().map_err(|_| CalcError::InvalidInput)?
+        };
+        for i in 1..=num {
+            res *= i;
+        }
+    } else if count == 2 {
+        let num = input.replace("(", "").replace("!", "").replace(")", "");
+        let num: i32 = if num.contains('(') || num.contains('+') || num.contains('-') {
+            check_bracket(&num)?
+        } else {
+            num.parse().map_err(|_| CalcError::InvalidInput)?
+        };
+
+        for i in 1..=num {
+            res *= i;
+        }
+        let temp = res;
+        res = 1;
+        for i in 1..=temp {
+            res *= i;
+        }
+    } else {
+        return Err(CalcError::InvalidInput);
+    }
+
+    Ok(res)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -285,5 +332,29 @@ mod tests {
 
     fn test_cos_two() {
         assert_eq!(check_bracket(&"cos(90)".to_string()).unwrap(), 0);
+    }
+
+    #[test]
+
+    fn test_fac_one() {
+        assert_eq!(check_bracket(&"(5)!".to_string()).unwrap(), 120);
+    }
+
+    #[test]
+
+    fn test_fac_two() {
+        assert_eq!(check_bracket(&"(2+1)!!".to_string()).unwrap(), 720);
+    }
+
+    #[test]
+
+    fn test_fac_three() {
+        assert_eq!(check_bracket(&"(2+3)!".to_string()).unwrap(), 120);
+    }
+
+    #[test]
+
+    fn test_fac_four() {
+        assert_eq!(check_bracket(&"(3)!!".to_string()).unwrap(), 720);
     }
 }

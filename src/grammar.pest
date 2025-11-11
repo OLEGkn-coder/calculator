@@ -9,3 +9,4 @@ function = {function_name ~ "(" ~ function_arg ~ ")"}
 function_name = { "pow" | "sqrt" | "sin" | "cos"}
 function_arg = { expression ~ ("," ~ expression)*}
 calculation = { SOI ~ expression ~ EOI }
+factorial = { in_brackets ~ ("!")+ } 
