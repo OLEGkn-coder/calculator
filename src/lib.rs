@@ -1,6 +1,8 @@
 #![doc = include_str!("../README.md")]
 
 pub mod error;
+use std::char;
+
 use error::{CalcError, Res};
 #[derive(pest_derive::Parser)]
 #[grammar = "grammar.pest"]
@@ -25,24 +27,55 @@ pub fn pars(input: &str) -> Res<i32> {
     let input = input.trim();
     check_bracket(&input.to_string())
 }
-
+/// Функція що видаляє коментарі та зайві пробіли
+pub fn remove_spaces(input: &String) -> String {
+    let mut res = String::new();
+    let mut chars = input.chars().peekable();
+    while let Some(&c) = chars.peek() {
+        match c {
+            ' ' | '\t' | '\n' => {
+                chars.next();
+            }
+            '#' => {
+                while let Some(&c) = chars.peek() {
+                    chars.next();
+                    if c == '\n' {
+                        break;
+                    }
+                }
+            }
+            _ => {
+                res.push(c);
+                chars.next();
+            }
+        }
+    }
+    res
+}
 /// Функція шукає дужки у нашому виразі, якщо знаходить то
 /// обчислюємо значення в дужках та замінюємо цей вираз з дужками на саме значення.
 pub fn check_bracket(input: &String) -> Res<i32> {
+    let input = remove_spaces(input);
     if input.contains("pow") {
-        return to_power(input);
+        return to_power(&input);
     }
     if input.contains("sqrt") {
-        return to_sqrt(input);
+        return to_sqrt(&input);
     }
     if input.contains("sin") {
-        return sin_func(input);
+        return sin_func(&input);
     }
     if input.contains("cos") {
-        return cos_func(input);
+        return cos_func(&input);
     }
     if input.contains("!") && input.contains('(') && input.contains(')') {
-        return fac_func(input);
+        return fac_func(&input);
+    }
+    if input.starts_with("-") {
+        return unary_func(&input);
+    }
+    if input.starts_with("|") && input.ends_with("|") {
+        return abs_func(&input);
     }
     let mut new_input = input.clone();
     while new_input.contains('(') && new_input.contains(')') {
@@ -247,6 +280,36 @@ pub fn fac_func(input: &String) -> Res<i32> {
     Ok(res)
 }
 
+pub fn unary_func(input: &String) -> Res<i32> {
+    let num = input.trim_matches('-').to_string();
+    let num: i32 = if num.contains('(')
+        || num.contains('+')
+        || num.contains('-')
+        || num.contains('*')
+        || num.contains('/')
+    {
+        check_bracket(&num)?
+    } else {
+        num.parse().map_err(|_| CalcError::InvalidInput)?
+    };
+    Ok(-num)
+}
+
+pub fn abs_func(input: &String) -> Res<i32> {
+    let num = input.trim_matches('|').to_string();
+    let num: i32 = if num.contains('(')
+        || num.contains('+')
+        || num.contains('-')
+        || num.contains('*')
+        || num.contains('/')
+    {
+        check_bracket(&num)?
+    } else {
+        num.parse().map_err(|_| CalcError::InvalidInput)?
+    };
+    Ok(num.abs())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -356,5 +419,49 @@ mod tests {
 
     fn test_fac_four() {
         assert_eq!(check_bracket(&"(3)!!".to_string()).unwrap(), 720);
+    }
+    #[test]
+
+    fn test_unary_one() {
+        assert_eq!(check_bracket(&"-5".to_string()).unwrap(), -5);
+    }
+
+    #[test]
+
+    fn test_unary_two() {
+        assert_eq!(check_bracket(&"-(3+2)".to_string()).unwrap(), -5);
+    }
+
+    #[test]
+
+    fn test_unary_three() {
+        assert_eq!(check_bracket(&"-(2*(3+2))".to_string()).unwrap(), -10);
+    }
+
+    #[test]
+
+    fn test_abs_one() {
+        assert_eq!(check_bracket(&"|-5|".to_string()).unwrap(), 5);
+    }
+
+    #[test]
+
+    fn test_abs_two() {
+        assert_eq!(check_bracket(&"|2-5|".to_string()).unwrap(), 3);
+    }
+
+    #[test]
+
+    fn test_remove_spaces_one() {
+        assert_eq!(check_bracket(&"12+3*4 #вираз".to_string()).unwrap(), 24);
+    }
+
+    #[test]
+
+    fn test_remove_spaces_two() {
+        assert_eq!(
+            check_bracket(&"12 + 3 * 4 #вираз\n+1".to_string()).unwrap(),
+            25
+        );
     }
 }

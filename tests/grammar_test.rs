@@ -294,3 +294,81 @@ fn test_rule_factorial_inv() {
     let res = ParserCalculator::parse(Rule::factorial, "5");
     assert!(res.is_err());
 }
+
+///unary
+
+#[test]
+fn test_rule_unary() {
+    let res = ParserCalculator::parse(Rule::unary, "-5");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_unary_exp() {
+    let res = ParserCalculator::parse(Rule::unary, "-(32+2)");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_unary_inv() {
+    let res = ParserCalculator::parse(Rule::unary, "5-");
+    assert!(res.is_err());
+}
+
+///abs
+
+#[test]
+fn test_rule_abs() {
+    let res = ParserCalculator::parse(Rule::abs, "|5|");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_abs_exp() {
+    let res = ParserCalculator::parse(Rule::abs, "|32+5|");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_abs_inv() {
+    let res = ParserCalculator::parse(Rule::abs, "||5");
+    assert!(res.is_err());
+}
+
+///whitespace_or_comment
+
+#[test]
+fn test_rule_whitespace_or_comment_one() {
+    let res = ParserCalculator::parse(Rule::whitespace_or_comment, "\t \n");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_whitespace_or_comment_two() {
+    let res = ParserCalculator::parse(Rule::whitespace_or_comment, "#comment");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_whitespace_or_comment_three() {
+    let res = ParserCalculator::parse(Rule::whitespace_or_comment, "#comment\n");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_whitespace_or_comment_four() {
+    let res = ParserCalculator::parse(Rule::whitespace_or_comment, "#comment\t");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_whitespace_or_comment_five() {
+    let res = ParserCalculator::parse(Rule::whitespace_or_comment, "#comment\t\n");
+    assert!(res.is_ok());
+}
+
+#[test]
+fn test_rule_whitespace_or_comment_six() {
+    let res = ParserCalculator::parse(Rule::whitespace_or_comment, "");
+    assert!(res.is_ok());
+}

@@ -105,3 +105,48 @@ fn test_fac_three() {
 fn test_fac_four() {
     assert_eq!(check_bracket(&"(3)!!".to_string()).unwrap(), 720);
 }
+
+#[test]
+
+fn test_unary_one() {
+    assert_eq!(check_bracket(&"-5".to_string()).unwrap(), -5);
+}
+
+#[test]
+
+fn test_unary_two() {
+    assert_eq!(check_bracket(&"-(3+2)".to_string()).unwrap(), -5);
+}
+
+#[test]
+
+fn test_unary_three() {
+    assert_eq!(check_bracket(&"-(2*(3+2))".to_string()).unwrap(), -10);
+}
+
+#[test]
+
+fn test_abs_one() {
+    assert_eq!(check_bracket(&"|-5|".to_string()).unwrap(), 5);
+}
+
+#[test]
+
+fn test_abs_two() {
+    assert_eq!(check_bracket(&"|2-5|".to_string()).unwrap(), 3);
+}
+
+#[test]
+
+fn test_remove_spaces_one() {
+    assert_eq!(check_bracket(&"12+3*4 #вираз".to_string()).unwrap(), 24);
+}
+
+#[test]
+
+fn test_remove_spaces_two() {
+    assert_eq!(
+        check_bracket(&"12 + 3 * 4 #вираз\n+1".to_string()).unwrap(),
+        25
+    );
+}
