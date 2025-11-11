@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "Parser_calculator"
+name = "ParserCalculator"
 version = "0.1.1"
 dependencies = [
  "anyhow",

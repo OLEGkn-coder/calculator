@@ -1,4 +1,4 @@
-# Parser-calculator, autor Oleh Moshenskyi
+# ParserCalculator, autor Oleh Moshenskyi
 
 ## Parsing a mathemtical expression
 
@@ -83,5 +83,7 @@ pub fn cos_func(input: &String) -> Res<i32> {}
 ```text
 assert_eq!(check_bracket(&"cos(0)".to_string()).unwrap(), 1);
 ```
+
+9. Також можна буде порахувати інтеграл
 
 
