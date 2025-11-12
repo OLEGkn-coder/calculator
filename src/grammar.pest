@@ -1,15 +1,30 @@
+/// Пропускає пробіли та переноси рядків.
 WHITESPACE = _{ " " | "\n" }
+/// Пропускає пробіли, таби, переноси і коментарі
 whitespace_or_comment = _{ (" "| "\t" | "\n" | "#" ~ (!"\n" ~ ANY)*)* }
+/// Ціле число з необов'язковим мінусом
 number = @{ "-"? ~ ASCII_DIGIT+ ~ whitespace_or_comment}
+/// Арифметичний вираз із пріоритетами операцій
 expression = {priority ~ (second_priority ~ priority)* ~ whitespace_or_comment}
+/// Група термів високого пріоритету("*", "/")
 priority = { (unary | in_brackets) ~ (first_priority ~(unary | in_brackets))* ~ whitespace_or_comment}
+/// Вираз у дужках, функцій, або модуль
 in_brackets = {function| abs | number | "(" ~ expression ~ ")" ~ whitespace_or_comment}
+/// Оператори першого пріоритету("*", "/")
 first_priority = { "*" | "/" ~ whitespace_or_comment}
+/// Оператори другого пріоритету("+", "-")
 second_priority = { "+" | "-" ~ whitespace_or_comment}
+/// Виклик функцій
 function = {function_name ~ "(" ~ function_arg ~ ")" ~ whitespace_or_comment }
+/// Назва функцій, що підтримуються
 function_name = { "pow" | "sqrt" | "sin" | "cos"}
+/// Аргументи функцій, розділені комами
 function_arg = { expression ~ ("," ~ expression)* ~ whitespace_or_comment }
+/// Повний вираз від початку до кінця вхідного рядка
 calculation = { SOI ~ expression ~ EOI }
+/// Факторіал для числа або виразу у дужках
 factorial = { in_brackets ~ ("!")+ ~ whitespace_or_comment } 
+/// Унарний мінус перед виразом
 unary = { "-" ~ in_brackets ~ whitespace_or_comment }
+/// Абсолютне значення виразу(модуль)
 abs = { "|" ~ expression ~ "|" ~ whitespace_or_comment }

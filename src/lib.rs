@@ -453,7 +453,7 @@ mod tests {
     #[test]
 
     fn test_remove_spaces_one() {
-        assert_eq!(check_bracket(&"12+3*4 #вираз".to_string()).unwrap(), 24);
+        assert_eq!(check_bracket(&"12+3*4 #comment".to_string()).unwrap(), 24);
     }
 
     #[test]

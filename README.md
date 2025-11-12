@@ -87,13 +87,85 @@ pub fn cos_func(input: &String) -> Res<i32> {}
 assert_eq!(check_bracket(&"cos(0)".to_string()).unwrap(), 1);
 ```
 
-9. Калькулятор рахує інтеграл: (4)!
+9. 
+```text
+pub fn fac_func(input: &String) -> Res<i32> {}
+```
 
-10. Калькулятор обчислює унарний мінус: -(3+3)
+- Функція що рахує факторіал, також підтримує подвійний факторіал та факторіальний вираз
 
-11. Калькулятор обчислює модуль: |-5|
+```text
+assert_eq!(check_bracket(&"(2+3)!".to_string()).unwrap(), 120);
+```
 
-12. За допомогою функції remove_spaces з виразу прибирається коментарі та пробіли: 2+2 #comment
 
 
 
+10. 
+```text
+pub fn unary_func(input: &String) -> Res<i32> {} 
+```
+
+- Функція що рахує рахує унарний мінус. Також є можливість обрахування виразів з врахування "-"
+
+```text
+assert_eq!(check_bracket(&"-(2*(3+2))".to_string()).unwrap(), -10);
+```
+
+
+11. 
+```text
+pub fn abs_func(input: &String) -> Res<i32> {}
+```
+
+- Функція що рахує рахує модуль числа або виразу
+
+```text
+ assert_eq!(check_bracket(&"|2-5|".to_string()).unwrap(), 3);
+```
+
+12. 
+
+```text
+pub fn remove_spaces(input: &String) -> String {}
+```
+
+- За допомогою функції remove_spaces з виразу прибирається коментарі та пробіли 
+
+```text
+check_bracket(&"12 + 3 * 4 #comment\n+1".to_string()).unwrap(),
+```
+
+#### Також додані граматичні првила:
+```text
+/// Пропускає пробіли та переноси рядків.
+WHITESPACE = _{ " " | "\n" }
+/// Пропускає пробіли, таби, переноси і коментарі
+whitespace_or_comment = _{ (" "| "\t" | "\n" | "#" ~ (!"\n" ~ ANY)*)* }
+/// Ціле число з необов'язковим мінусом
+number = @{ "-"? ~ ASCII_DIGIT+ ~ whitespace_or_comment}
+/// Арифметичний вираз із пріоритетами операцій
+expression = {priority ~ (second_priority ~ priority)* ~ whitespace_or_comment}
+/// Група термів високого пріоритету("*", "/")
+priority = { (unary | in_brackets) ~ (first_priority ~(unary | in_brackets))* ~ whitespace_or_comment}
+/// Вираз у дужках, функцій, або модуль
+in_brackets = {function| abs | number | "(" ~ expression ~ ")" ~ whitespace_or_comment}
+/// Оператори першого пріоритету("*", "/")
+first_priority = { "*" | "/" ~ whitespace_or_comment}
+/// Оператори другого пріоритету("+", "-")
+second_priority = { "+" | "-" ~ whitespace_or_comment}
+/// Виклик функцій
+function = {function_name ~ "(" ~ function_arg ~ ")" ~ whitespace_or_comment }
+/// Назва функцій, що підтримуються
+function_name = { "pow" | "sqrt" | "sin" | "cos"}
+/// Аргументи функцій, розділені комами
+function_arg = { expression ~ ("," ~ expression)* ~ whitespace_or_comment }
+/// Повний вираз від початку до кінця вхідного рядка
+calculation = { SOI ~ expression ~ EOI }
+/// Факторіал для числа або виразу у дужках
+factorial = { in_brackets ~ ("!")+ ~ whitespace_or_comment } 
+/// Унарний мінус перед виразом
+unary = { "-" ~ in_brackets ~ whitespace_or_comment }
+/// Абсолютне значення виразу(модуль)
+abs = { "|" ~ expression ~ "|" ~ whitespace_or_comment }
+```
